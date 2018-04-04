@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
+import { Provider, connect } from 'react-redux';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 
 import Users from './users';
@@ -12,49 +12,19 @@ import Register from './register';
 import Tasks from './tasks';
 import LoginForm from './loginform';
 
-export default function tasktracker_init() {
+export default function tasktracker_init(store) {
   ReactDOM.render(
-    <TasktrackerComp />,
+    <Provider store = { store }>
+      <TasktrackerComp />
+    </Provider>,
     document.getElementById('root')
   );
 }
 
 
-class TasktrackerComp extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      tasks: [],
-      users: [],
-    };
 
-    this.request_tasks();
-    this.request_users();
-  }
-
-  request_tasks(){
-    $.ajax("api/v1/tasks", {
-      method: "get",
-      dataType: "json",
-      contentType: "aplication/json; charset=UTF-8",
-      success: (resp) => {
-        this.setState(_.extend(this.state, {tasks:resp.data}));
-      },
-    });
-  }
-
-  request_users(){
-    $.ajax("api/v1/users", {
-      method: "get",
-      dataType: "json",
-      contentType: "aplication/json; charset=UTF-8",
-      success: (resp) => {
-        this.setState(_.extend(this.state, {users:resp.data}));
-      },
-    });
-  }
-
-  render(){
+let TasktrackerComp = connect((state) => state)((props) =>
+  {
     return(
       <Router>
         <div>
@@ -69,21 +39,21 @@ class TasktrackerComp extends React.Component {
           <Route path="/users" exact={true} render ={ () =>
               <div>
                   <Nav />
-                  <Users users = {this.state.users}/>
+                  <Users users = {props.users}/>
               </div>
             } />
           <Route path="/tasks" exact={true} render ={ () =>
               <div>
                   <Nav />
-                  <Tasks tasks = {this.state.tasks} />
+                  <Tasks tasks = {props.tasks} />
               </div>
            } />
          <Route path="/users/:user_id" exact={true} render ={ ({match}) =>
              <div>
                  <Nav />
-                 <TaskForm users = {this.state.users}/>
+                 <TaskForm users = {props.users}/>
                  <h1>My Agenda</h1>
-                 <Agenda tasks = {_.filter(this.state.tasks, (task) =>
+                 <Agenda tasks = {_.filter(props.tasks, (task) =>
                    match.params.user_id == task.user.id)}/>
 
              </div>
@@ -91,7 +61,7 @@ class TasktrackerComp extends React.Component {
          <Route path="/tasks/:task_id" exact={true} render ={ () =>
              <div>
                 <Nav />
-                  <TaskEditForm users = {this.state.users}/>
+                  <TaskEditForm users = {props.users}/>
              </div>
            } />
          <Route path="/register" exact={true} render ={ () =>
@@ -103,5 +73,4 @@ class TasktrackerComp extends React.Component {
         </div>
       </Router>
     );
-  }
-}
+  });
