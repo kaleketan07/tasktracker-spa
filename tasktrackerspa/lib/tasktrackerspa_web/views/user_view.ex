@@ -13,6 +13,7 @@ defmodule TasktrackerspaWeb.UserView do
   def render("user.json", %{user: user}) do
     %{id: user.id,
       email: user.email,
-      name: user.name}
+      name: user.name,
+      password: user.password_hash}
   end
 end

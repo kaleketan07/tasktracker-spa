@@ -30,27 +30,27 @@ let TasktrackerComp = connect((state) => state)((props) =>
         <div>
           <h1>Task Tracker</h1>
 
-          <Route path="/" exact={true} render ={ () =>
+          <Route path="/" exact={true} render ={ ({history}) =>
             <div>
-                <LoginForm />
+                <LoginForm history = {history}/>
             </div>
             } />
 
           <Route path="/users" exact={true} render ={ () =>
               <div>
-                  <Nav />
+                  <Nav token = {props.token} />
                   <Users users = {props.users}/>
               </div>
             } />
           <Route path="/tasks" exact={true} render ={ () =>
               <div>
-                  <Nav />
+                  <Nav token = {props.token}/>
                   <Tasks tasks = {props.tasks} />
               </div>
            } />
          <Route path="/users/:user_id" exact={true} render ={ ({match}) =>
              <div>
-                 <Nav />
+                 <Nav token = {props.token}/>
                  <TaskForm users = {props.users}/>
                  <h1>My Agenda</h1>
                  <Agenda tasks = {_.filter(props.tasks, (task) =>
@@ -58,16 +58,16 @@ let TasktrackerComp = connect((state) => state)((props) =>
 
              </div>
            } />
-         <Route path="/tasks/:task_id" exact={true} render ={ () =>
+         <Route path="/tasks/:task_id" exact={true} render ={ ({match}) =>
              <div>
-                <Nav />
-                  <TaskEditForm users = {props.users}/>
+                  <Nav token = {props.token}/>
+                  <TaskEditForm tid = {match.params.task_id} users = {props.users}/>
              </div>
            } />
-         <Route path="/register" exact={true} render ={ () =>
+         <Route path="/register" exact={true} render ={ ({history}) =>
               <div>
                 <Nav />
-                <Register />
+                <Register history = {history}/>
               </div>
            } />
         </div>

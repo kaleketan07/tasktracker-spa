@@ -54,9 +54,11 @@ defmodule Tasktrackerspa.Schedule do
 
   """
   def create_task(attrs \\ %{}) do
-    %Task{}
+    {:ok, task} = %Task{}
     |> Task.changeset(attrs)
     |> Repo.insert()
+    task = Repo.preload(task,:user)
+    {:ok, task}
   end
 
   @doc """

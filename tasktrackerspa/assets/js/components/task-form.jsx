@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, FormGroup, Label, Input } from 'reactstrap';
 import { connect } from 'react-redux';
-
+import api from '../api';
 
 function TaskForm(props){
 
@@ -9,17 +9,35 @@ function TaskForm(props){
       let target = $(ev.target);
       let data = {};
       data[target.attr('name')] = target.val();
+      data['status'] = $('#cb').prop('checked') ? true : false;
       let action = {
-        type: 'CREATE_TASK',
+        type: 'UPDATE_TASK',
         data: data,
       }
       props.dispatch(action);
     }
 
+    function submit() {
+      if ((Number(props.form.timespent) % 15) == 0){
+        api.submit_create(props.form);
+        clear();
+      }
+      else{
+        alert("The time spent should be in mutliples of 15 minutes");
+      }
 
+
+    }
+
+    function clear(){
+      props.dispatch({
+        type: 'CLEAR_FORM',
+      });
+    }
 
     let users = _.map(props.users, (user) =>
-  <option key= {user.id} value = {user.id}>{user.name}</option>);
+    <option key= {user.id} value = {user.id}>{user.name}</option>);
+
     return <div>
       <h2>Create New Task:</h2>
 
@@ -37,7 +55,8 @@ function TaskForm(props){
       </FormGroup>
       <FormGroup>
         <Label for = "status"> Completed </Label>
-        <Input type = "checkbox" name = "status" value = {props.form.status} onChange = {createtask}/>
+        <Input type = "checkbox" id = "cb" name = "status" value = {props.form.status} checked = {props.form.status} onChange = {createtask}/>
+
       </FormGroup>
       <FormGroup>
         <Label for = "user_id"> Assigned to </Label>
@@ -46,7 +65,7 @@ function TaskForm(props){
        </Input>
       </FormGroup>
 
-      <p><Button onClick = {() => alert("creates a new task")}> Create </Button></p>
+      <p><Button onClick = {submit}> Create </Button></p>
 
     </div>;
 }
